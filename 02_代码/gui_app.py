@@ -1015,6 +1015,7 @@ class EvaluationSystemGUI:
         b_row2 = tk.Frame(c2, bg="#ffffff")
         b_row2.pack(anchor="w")
         ModernButton(b_row2, text="运行质量体检", font=("微软雅黑", 8, "bold"), bg_color="#0284c7", hover_color="#0369a1", padx=10, pady=5, command=lambda: self._execute_module("数据体检", "data_quality_checker.py")).pack(side=tk.LEFT, padx=(0, 6))
+        ModernButton(b_row2, text="📄 查看体检报告 (.json)", font=("微软雅黑", 8, "bold"), bg_color="#f1f5f9", hover_color="#e2e8f0", text_color="#0f172a", padx=8, pady=5, command=self._cmd_view_data_quality_report).pack(side=tk.LEFT)
 
         # 卡片 3：核心成果图
         c3 = tk.Frame(grid_frame, bg="#ffffff", relief="solid", bd=1, padx=14, pady=12)
@@ -1032,6 +1033,7 @@ class EvaluationSystemGUI:
         tk.Label(c4, text="🛡️ 系统运行完整性自检 (.json)", font=("微软雅黑", 10, "bold"), bg="#ffffff", fg="#d97706").pack(anchor="w")
         tk.Label(c4, text="全自动化审计核心文件齐全度、指标数值一致性与无障碍结构规范，导出 JSON 验证证明。", font=("微软雅黑", 8), bg="#ffffff", fg="#64748b").pack(anchor="w", pady=(3, 10))
         b_row4 = tk.Frame(c4, bg="#ffffff")
+        b_row4.pack(anchor="w")
         ModernButton(b_row4, text="执行系统完整性自检", font=("微软雅黑", 8, "bold"), bg_color="#d97706", hover_color="#b45309", padx=10, pady=5, command=lambda: self._execute_module("系统自检", "system_integrity_validator.py")).pack(side=tk.LEFT, padx=(0, 6))
         ModernButton(b_row4, text="📄 查看自检简报 (.txt)", font=("微软雅黑", 8, "bold"), bg_color="#f1f5f9", hover_color="#e2e8f0", text_color="#0f172a", padx=8, pady=5, command=self._cmd_view_integrity_result_txt).pack(side=tk.LEFT)
 
@@ -1673,6 +1675,20 @@ class EvaluationSystemGUI:
         success = open_txt_file(txt_path)
         if not success:
             messagebox.showwarning("打开失败", f"无法自动启动文本阅读器打开文件：\n{txt_path}")
+
+    def _cmd_view_data_quality_report(self):
+        """使用系统默认文本阅读器查看数据质量体检 JSON 报告。"""
+        report_path = RESULT_DIR / "data_integrity_report.json"
+        if not report_path.exists():
+            messagebox.showinfo(
+                "提示",
+                "尚未检测到数据质量体检报告。\n请先点击【运行质量体检】生成报告。",
+            )
+            return
+
+        success = open_txt_file(report_path)
+        if not success:
+            messagebox.showwarning("打开失败", f"无法自动启动文本阅读器打开文件：\n{report_path}")
 
     def _cmd_refresh_charts(self):
         def task():
